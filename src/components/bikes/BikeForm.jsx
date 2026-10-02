@@ -5,6 +5,11 @@ import {
     updateBike
 } from "../../services/bikeService";
 
+import {
+    uploadImage,
+    getImageUrl
+} from "../../services/uploadService";
+
 function BikeForm({
     bike,
     categories,
@@ -38,6 +43,8 @@ function BikeForm({
 
     const [saving, setSaving] = useState(false);
 
+    
+
     useEffect(() => {
 
         if (bike) {
@@ -55,6 +62,23 @@ function BikeForm({
             });
 
             setImage(bike.image || null);
+            setSelectedFile(null);
+        } else {
+
+            setForm({
+                descrizione: "",
+                productCode: "",
+                colore: "",
+                taglia: "",
+                peso: "",
+                quantita: "",
+                idCategoria: "",
+                idProduttore: "",
+                prezzo: ""
+            });
+
+            setImage(null);
+            setSelectedFile(null);
         }
 
     }, [bike]);
@@ -83,9 +107,10 @@ function BikeForm({
 
         setSelectedFile(file);
 
-        setImage(
-            URL.createObjectURL(file)
-        );
+        // Anteprima immediata
+        const previewUrl = URL.createObjectURL(file);
+
+        setImage(previewUrl);
     };
 
     const handleSubmit = async (event) => {
@@ -93,62 +118,64 @@ function BikeForm({
         event.preventDefault();
 
         setError("");
-        setSaving(true);
 
         try {
 
-            if (isEdit) {
+            setSaving(true);
 
-                const body = {
-                    productCode: bike.productCode,
-                    descrizione: form.descrizione,
-                    colore: form.colore,
-                    taglia: form.taglia,
-                    peso: form.peso,
-                    quantita: form.quantita,
-                    idCategoria: form.idCategoria,
-                    idProduttore: form.idProduttore,
-                    prezzo: form.prezzo
-                };
+
+            const body = {
+                descrizione: form.descrizione,
+                productCode: Number(form.productCode),
+                colore: form.colore,
+                taglia: form.taglia,
+                peso: Number(form.peso),
+                quantita: Number(form.quantita),
+                prezzo: Number(form.prezzo),
+                idCategoria: Number(form.idCategoria),
+                idProduttore: Number(form.idProduttore)
+            };
+
+
+            if (isEdit) {
 
                 await updateBike(body);
 
             } else {
 
-                const body = {
-                    descrizione: form.descrizione,
-                    productCode: form.productCode,
-                    colore: form.colore,
-                    taglia: form.taglia,
-                    peso: form.peso,
-                    quantita: form.quantita,
-                    preco: form.prezzo,
-                    idCategoria: form.idCategoria,
-                    idProduttore: form.idProduttore
-                };
-
-                // Correggiamo il nome del campo:
-                body.prezzo = form.prezzo;
-
                 await createBike(body);
+
             }
 
-            /*
-             * L'upload immagine verrà aggiunto qui
-             * dopo aver recuperato UploadService Angular.
-             */
 
-            onClose(true);
+            /*
+            * Upload della foto solamente
+            * se l'utente ne ha selezionata una.
+            */
+            if (selectedFile) {
+                console.log("FILE:", selectedFile);
+                console.log("PRODUCT CODE:", form.productCode);
+                await uploadImage(
+                    selectedFile,
+                    form.productCode
+                );
+
+            }
+
+
 
         } catch (err) {
 
             console.error(err);
 
-            setError(err.message);
+            setError(
+                err.message || "Errore durante il salvataggio"
+            );
 
         } finally {
 
             setSaving(false);
+
         }
     };
 
