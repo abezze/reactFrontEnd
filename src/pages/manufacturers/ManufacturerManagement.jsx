@@ -4,13 +4,24 @@ import {
     listManufacturers
 } from "../../services/bikeService";
 
+import {
+    createManufacturer,
+    updateManufacturer,
+    deleteManufacturer
+} from "../../services/manufacturerService";
+
+import ManufacturerForm from "../../components/bikes/ManufacturerForm";
+
 
 function ManufacturerManagement() {
 
     const [manufacturers, setManufacturers] = useState([]);
+    const [selectedManufacturer, setSelectedManufacturer] = useState(null);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showForm, setShowForm] = useState(false);
+
 
     useEffect(() => {
 
@@ -18,40 +29,115 @@ function ManufacturerManagement() {
 
     }, []);
 
+
     const loadInitialData = async () => {
-    
-            try {
-    
-                setLoading(true);
-                setError("");
-    
-                const [
-                    manufacturersData
-                ] = await Promise.all([
-                    listManufacturers()
-                ]);
-    
-                setManufacturers(manufacturersData);
-    
-            } catch (err) {
-    
-                console.error(err);
-    
-                setError(err.message);
-    
-            } finally {
-    
-                setLoading(false);
-            }
-        };
+
+        try {
+
+            setLoading(true);
+            setError("");
+
+            const manufacturersData = await listManufacturers();
+
+            setManufacturers(manufacturersData);
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(err.message);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    };
+
 
     const handleNewManufacturer = () => {
 
-        
-        };
+        setSelectedManufacturer(null);
+        setShowForm(true);
 
-    
-        return (
+    };
+
+
+    const handleEditManufacturer = (produttore) => {
+
+        setSelectedManufacturer(produttore);
+        setShowForm(true);
+
+    };
+
+
+    const handleSaveManufacturer = async (produttore) => {
+
+        try {
+
+            setError("");
+
+            if (produttore.id) {
+
+                // MODIFICA
+                await updateManufacturer(produttore);
+
+            } else {
+
+                // CREAZIONE
+                await createManufacturer(produttore);
+
+            }
+
+            // Ricarica la lista dal backend
+            await loadInitialData();
+
+            // Chiude il form
+            setShowForm(false);
+            setSelectedManufacturer(null);
+
+        } catch (err) {
+
+            console.error(err);
+
+            throw err;
+        }
+    };
+
+
+    const handleDeleteManufacturer = async (id) => {
+
+        try {
+
+            setError("");
+
+            await deleteManufacturer(id);
+
+            // Ricarica la lista
+            await loadInitialData();
+
+            // Chiude il form
+            setShowForm(false);
+            setSelectedManufacturer(null);
+
+        } catch (err) {
+
+            console.error(err);
+
+            throw err;
+        }
+    };
+
+
+    const handleFormClose = () => {
+
+        setShowForm(false);
+        setSelectedManufacturer(null);
+
+    };
+
+
+    return (
         <div className="manufacturer-management">
 
             <div className="bike-card">
@@ -78,8 +164,11 @@ function ManufacturerManagement() {
                     </div>
                 )}
 
+
                 {loading ? (
+
                     <p>Caricamento...</p>
+
                 ) : (
 
                     <div className="table-container">
@@ -87,14 +176,16 @@ function ManufacturerManagement() {
                         <table className="bike-table">
 
                             <thead>
+
                                 <tr>
-                                    <th></th>
                                     <th>Marchio</th>
                                     <th>Nome Azienda</th>
                                     <th>Codice Fiscale</th>
                                     <th>Partita IVA</th>
                                 </tr>
+
                             </thead>
+
 
                             <tbody>
 
@@ -104,11 +195,9 @@ function ManufacturerManagement() {
                                         key={produttore.id}
                                         className="clickable-row"
                                         onClick={() =>
-                                            handleEditBike(produttore)
+                                            handleEditManufacturer(produttore)
                                         }
                                     >
-
-                                        
 
                                         <td>
                                             {produttore.marchio}
@@ -126,10 +215,6 @@ function ManufacturerManagement() {
                                             {produttore.partitaIva}
                                         </td>
 
-                                        
-
-                                        
-
                                     </tr>
 
                                 ))}
@@ -144,15 +229,21 @@ function ManufacturerManagement() {
 
             </div>
 
-            
+
+            {showForm && (
+
+                <ManufacturerForm
+                    produttore={selectedManufacturer}
+                    onClose={handleFormClose}
+                    onSave={handleSaveManufacturer}
+                    onDelete={handleDeleteManufacturer}
+                />
+
+            )}
 
         </div>
     );
-
-
-
-
-
 }
+
 
 export default ManufacturerManagement;
