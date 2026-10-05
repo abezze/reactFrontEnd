@@ -1,3 +1,15 @@
+import { Link } from "react-router-dom";
+
+
+import ProtectedRoute from "../components/ProtectedRoute";
+import AdminRoute from "../components/AdminRoute";
+
+
+
+import UserManagement from "../pages/users/UserManagement";
+import BikeManagement from "../pages/bikes/BikeManagement";
+import ManufacturerManagement from "../pages/manufacturers/ManufacturerManagement";
+
 function Home() {
 
     return (
@@ -11,8 +23,13 @@ function Home() {
             <div className="dashboard-grid">
 
                 <div className="dashboard-card">
-                    <h2>🚲 Biciclette</h2>
-                    <p>Gestisci il catalogo delle biciclette.</p>
+                    
+                    <Link
+                        to="/dash/bike"
+                        className="dashboard-card">
+                        <h2>📦 Biciclette</h2>
+                        <p>Catalogo biciclette.</p>
+                    </Link>
                 </div>
 
                 <div className="dashboard-card">
@@ -21,8 +38,12 @@ function Home() {
                 </div>
 
                 <div className="dashboard-card">
-                    <h2>🏭 Produttori</h2>
-                    <p>Gestisci i produttori.</p>
+                    <Link
+                        to="/dash/produttori"
+                        className="dashboard-card">
+                        <h2>📦 Produttori</h2>
+                        <p>Visualizza e gestisci i produttori.</p>
+                    </Link>
                 </div>
 
                 <div className="dashboard-card">

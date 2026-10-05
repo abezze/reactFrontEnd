@@ -94,9 +94,9 @@ function App() {
                             <Route
                                 path="/dash/bike"
                                 element={
-                                    <AdminRoute>
+                                    <ProtectedRoute>
                                         <BikeManagement />
-                                    </AdminRoute>
+                                    </ProtectedRoute>
                                 }
                             />
 

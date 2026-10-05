@@ -25,6 +25,8 @@ function BikeManagement() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const isAdmin = localStorage.getItem("isAdmin") === "1";
+
     useEffect(() => {
 
         loadInitialData();
@@ -194,12 +196,14 @@ function BikeManagement() {
 
                     <h1>Elenco Biciclette</h1>
 
-                    <button
-                        type="button"
-                        onClick={handleNewBike}
-                    >
-                        Nuovo Prodotto
-                    </button>
+                    {isAdmin && (
+                        <button
+                            type="button"
+                            onClick={handleNewBike}
+                        >
+                            Nuovo Prodotto
+                        </button>
+                    )}
 
                 </div>
 
