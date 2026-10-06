@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCart } from "../../context/CartContext";
 
 import {
     listBikes,
@@ -27,11 +28,21 @@ function BikeManagement() {
 
     const isAdmin = localStorage.getItem("isAdmin") === "1";
 
+    const { addToCart } = useCart();
+
     useEffect(() => {
 
         loadInitialData();
 
     }, []);
+
+    const handleAddToCart = (bike) => {
+
+        addToCart(bike);
+
+    };
+
+    const { addItemToCart } = useCart();
 
     const loadInitialData = async () => {
 
@@ -396,6 +407,16 @@ function BikeManagement() {
                                                     currency: "EUR"
                                                 }
                                             )}
+                                        </td>
+
+                                        <td onClick={(event) => event.stopPropagation()}>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleAddToCart(bike)}
+                                                title="Aggiungi al carrello"
+                                            >
+                                                🛒
+                                            </button>
                                         </td>
 
                                     </tr>

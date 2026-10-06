@@ -64,7 +64,7 @@ function App() {
                             />
 
                             <Route
-                                path="/dash/cart"
+                                path="/cart"
                                 element={
                                     <ProtectedRoute>
                                         <Cart />
